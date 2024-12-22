@@ -3,8 +3,10 @@ import { useSelector } from "react-redux";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 import useGetAllMessages from "@/hooks/useGetAllMessages";
+import useGetRealTimeMessage from "@/hooks/useGetRealTimeMessage";
 
 const Messages = () => {
+  useGetRealTimeMessage();
   useGetAllMessages();
   const { messages } = useSelector((store) => store.chat);
   const { selectedUser } = useSelector((store) => store.chat);

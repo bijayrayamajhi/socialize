@@ -10,6 +10,7 @@ const ChatPage = () => {
   const { selectedUser } = useSelector((store) => store.chat);
   const { onlineUsers } = useSelector((store) => store.chat);
   const dispatch = useDispatch();
+
   //cleanup selectedUser when user navigate to other page
   useEffect(() => {
     return () => {

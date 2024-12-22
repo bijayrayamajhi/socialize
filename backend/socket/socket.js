@@ -23,14 +23,14 @@ io.on("connection", (socket) => {
     userSocketMap[userId] = socket.id;
     console.log(`user connected with userId: ${userId} and socketId: ${socket.id}`);
   }
-  io.emit("getOnlineUsers", Object.keys(userSocketMap));
+  io.emit("getOnlineUsers", Object.keys(userSocketMap)); //returning userIds on this event
 
   socket.on("disconnect", () => {
     if (userId) {
       delete userSocketMap[userId];
       console.log(`user disconnected with userId: ${userId} and socketId: ${socket.id}`);
     }
-    io.emit("getOnlineUsers", Object.keys(userSocketMap));
+    io.emit("getOnlineUsers", Object.keys(userSocketMap)); // updating data on event trigerring
   });
 });
 
