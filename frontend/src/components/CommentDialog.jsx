@@ -6,12 +6,17 @@ import {
   DialogTrigger,
 } from "@radix-ui/react-dialog";
 import { MoreHorizontal } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Comment from "./Comment";
+import axios from "axios";
+import { toast } from "sonner";
+import { setPosts } from "./redux/postSlice";
 
 function CommentDialog({ dialogOpen, setDialogOpen }) {
+  const dispatch = useDispatch();
+
   const [commentInputText, setCommentInputText] = useState("");
   const handleCommentInputChange = (e) => {
     const inputText = e.target.value;
@@ -23,6 +28,45 @@ function CommentDialog({ dialogOpen, setDialogOpen }) {
   };
   const [open, setOpen] = useState(false);
   const { selectedPost } = useSelector((store) => store.post);
+  const [comments, setComments] = useState(selectedPost?.comments);
+  const { posts } = useSelector((store) => store.post);
+
+  useEffect(() => {
+    if (selectedPost) {
+      setComments(selectedPost?.comments);
+    }
+  }, [selectedPost]);
+
+  const handleCommentOnPost = async () => {
+    try {
+      const res = await axios.post(
+        `http://localhost:8080/api/post/comment/${selectedPost?._id}`,
+        { commentInputText },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (res.data.success) {
+        const updatedCommentData = [res.data.comment, ...comments];
+        setComments(updatedCommentData);
+        toast.success(res.data.message);
+        setCommentInputText("");
+
+        //update the comments array of post in store
+        const updatedPostCommentStore = posts.map((p) =>
+          p._id === selectedPost?._id ? { ...p, comments: updatedCommentData } : p
+        );
+        dispatch(setPosts(updatedPostCommentStore));
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || "An error occurred");
+    }
+  };
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -46,10 +90,11 @@ function CommentDialog({ dialogOpen, setDialogOpen }) {
         <div className='w-1/3 bg-white flex flex-col'>
           {/* Header: User Info */}
           <div className='p-4 flex items-center gap-2 border-b'>
-            <Avatar className='w-8 h-8'>
+            <Avatar className='w-10 h-10 rounded-full overflow-hidden'>
               <AvatarImage
                 src={selectedPost?.author?.profilePicture}
                 alt='User profile image'
+                className='w-full h-full object-cover'
               />
               <AvatarFallback className='bg-gray-300 text-sm font-semibold'>
                 CN
@@ -77,7 +122,7 @@ function CommentDialog({ dialogOpen, setDialogOpen }) {
 
           {/* Comments */}
           <div className='flex-1 p-4 overflow-y-auto space-y-4'>
-            {selectedPost?.comments.map((comment) => (
+            {comments?.map((comment) => (
               <Comment key={comment._id} comment={comment} />
             ))}
           </div>
@@ -92,7 +137,12 @@ function CommentDialog({ dialogOpen, setDialogOpen }) {
               onChange={handleCommentInputChange}
             />
             {commentInputText && (
-              <button className='text-blue-500 font-semibold text-sm'>Post</button>
+              <button
+                className='text-blue-500 font-semibold text-sm'
+                onClick={handleCommentOnPost}
+              >
+                Post
+              </button>
             )}
           </div>
         </div>

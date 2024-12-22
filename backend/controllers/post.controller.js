@@ -3,6 +3,7 @@ import cloudinary from "../utils/cloudinary.js";
 import User from "../models/user.model.js";
 import Post from "../models/post.model.js";
 import Comment from "../models/comment.model.js";
+import { getReceiverSocketId, io } from "../socket/socket.js";
 
 export const addNewPost = async (req, res) => {
   try {
@@ -53,7 +54,7 @@ export const addNewPost = async (req, res) => {
     await post.populate({ path: "author", select: "-password" });
 
     return res.status(201).json({
-      message: "Post created successfully",
+      message: "Post cconsole.log(input);reated successfully",
       post,
       success: true,
     });
@@ -79,7 +80,6 @@ export const getAllPost = async (req, res) => {
           select: "username profilePicture",
         },
       });
-    console.log(posts);
     return res.status(200).json({
       posts,
       success: true,
@@ -98,13 +98,13 @@ export const getAuthorPost = async (req, res) => {
     const authorId = req.id;
     const posts = await Post.find({ author: authorId })
       .sort({ createdAt: -1 })
-      .populate({ path: "author", select: "username, profilePicture" })
+      .populate({ path: "author", select: "username profilePicture" })
       .populate({
         path: "comments",
         sort: { createdAt: -1 },
         populate: {
           path: "author",
-          select: "username, profilePicture",
+          select: "username profilePicture",
         },
       });
 
@@ -132,7 +132,21 @@ export const likePost = async (req, res) => {
     await post.updateOne({ $addToSet: { likes: currUserId } });
     await post.save();
 
-    //implementing socket.io for real time notification
+    //implementing socket.io for real time like notification
+    const user = await User.findById(currUserId).select("username profilePicture");
+    const postOwnerID = post?.author.toString();
+
+    if (user?._id !== postOwnerID) {
+      //emit a notification event
+      const notification = {
+        type: "like",
+        userDetails: user,
+        targetedPostId,
+        message: "your post was liked! ",
+      };
+      const postOwnerSocketId = getReceiverSocketId(postOwnerID);
+      io.to(postOwnerSocketId).emit("notification", notification);
+    }
 
     return res.status(200).json({ message: "Post liked", success: true });
   } catch (error) {
@@ -159,7 +173,22 @@ export const dislikePost = async (req, res) => {
     await post.updateOne({ $pull: { likes: currUserId } });
     await post.save();
 
-    //implementing socket.io for real time notification
+    //implementing socket.io for real time dislike notification
+    const user = await User.findById(currUserId).select("username profilePicture");
+    const postOwnerId = post?.author.toString();
+
+    if (user?._id !== postOwnerId) {
+      //emit a notification
+
+      const notification = {
+        type: "dislike",
+        userDetails: user,
+        targetedPostId,
+        message: "your post was disliked! ",
+      };
+      const postOwnerSocketId = getReceiverSocketId(postOwnerId);
+      io.to(postOwnerSocketId).emit("notification", notification);
+    }
 
     return res.status(200).json({
       message: "Post disliked",
@@ -175,11 +204,9 @@ export const dislikePost = async (req, res) => {
 };
 
 export const addComment = async (req, res) => {
-  console.log("i am here..");
   try {
     const currUserId = req.id;
     const targetedPostId = req.params.id;
-    console.log(targetedPostId);
     const post = await Post.findById(targetedPostId);
 
     const { commentInputText } = req.body;

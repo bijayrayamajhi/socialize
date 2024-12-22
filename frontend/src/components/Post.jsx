@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import axios from "axios";
 import { setPosts, setSelectedPost } from "./redux/postSlice";
+import { Badge } from "@/components/ui/badge";
 
 function Post({ post }) {
   const [comments, setComments] = useState(post.comments);
@@ -132,9 +133,12 @@ function Post({ post }) {
               CN
             </AvatarFallback>
           </Avatar>
-          <h1 className='text-sm font-semibold text-gray-800 md:text-base'>
-            {post.author?.username}
-          </h1>
+          <div className='flex gap-1'>
+            <h1 className='text-sm font-semibold text-gray-800 md:text-base'>
+              {post.author?.username}
+            </h1>
+            {user._id === post?.author?._id && <Badge variant='outline'>Author</Badge>}
+          </div>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           {/* Trigger */}
@@ -206,15 +210,17 @@ function Post({ post }) {
 
       {/* Comments Section */}
       <div className='px-4 py-2'>
-        <span
-          onClick={() => {
-            dispatch(setSelectedPost(post));
-            setDialogOpen(true);
-          }}
-          className='text-gray-400 text-sm cursor-pointer'
-        >
-          View all {comments.length} comments
-        </span>
+        {comments.length > 0 && (
+          <span
+            onClick={() => {
+              dispatch(setSelectedPost(post));
+              setDialogOpen(true);
+            }}
+            className='text-gray-400 text-sm cursor-pointer'
+          >
+            View all {post?.comments?.length} comments
+          </span>
+        )}
         <CommentDialog dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} />
       </div>
 

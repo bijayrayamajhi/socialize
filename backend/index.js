@@ -1,18 +1,18 @@
 import express from "express";
-const app = express();
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDB from "./utils/db.js";
 import userRoute from "./routes/user.route.js";
 import postRoute from "./routes/post.route.js";
 import messageRoute from "./routes/message.route.js";
+import { app, server } from "./socket/socket.js";
 
 import dotenv from "dotenv";
 dotenv.config({});
 
 const port = process.env.PORT || 3000;
 
-app.listen(port, () => {
+server.listen(port, () => {
   connectDB();
   console.log(`Server is running on port ${port}`);
 });

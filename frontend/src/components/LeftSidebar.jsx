@@ -12,9 +12,11 @@ import { toast } from "sonner";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setAuthUser } from "./redux/authSlice";
+import { setAuthUser, setSuggestedUsers } from "./redux/authSlice";
 import { useState } from "react";
 import CreatePostDialog from "./CreatePostDialog";
+import { setPosts, setSelectedPost } from "./redux/postSlice";
+import { setSelectedUser } from "./redux/chatSlice";
 
 function LeftSidebar() {
   const dispatch = useDispatch();
@@ -28,6 +30,10 @@ function LeftSidebar() {
       });
       if (res.data.success) {
         dispatch(setAuthUser(null));
+        dispatch(setPosts([]));
+        dispatch(setSelectedPost(null));
+        dispatch(setSuggestedUsers([]));
+        dispatch(setSelectedUser(null));
         navigate("/login");
         toast.success(res.data.message);
       }
@@ -42,6 +48,12 @@ function LeftSidebar() {
       logoutHandler();
     } else if (itemText === "Create") {
       setOpen(true);
+    } else if (itemText === "Profile") {
+      navigate(`/profile/${user?._id}`);
+    } else if (itemText === "Home") {
+      navigate("/");
+    } else if (itemText === "Messages") {
+      navigate("/chat");
     }
   };
   const sidebarItems = [
@@ -53,7 +65,7 @@ function LeftSidebar() {
     { icon: <PlusSquare />, text: "Create" },
     {
       icon: (
-        <Avatar className="h-6 w-6">
+        <Avatar className='h-6 w-6'>
           <AvatarImage src={user?.profilePicture} />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
@@ -63,17 +75,17 @@ function LeftSidebar() {
     { icon: <LogOut />, text: "Logout" },
   ];
   return (
-    <div className="top-0 left-0 flex flex-col h-screen gap-3 p-3 border-r border-gray-200  md:w-[16%] w-[80px] z-10 fixed">
-      <div className="text-start font-bold">Logo</div>
+    <div className='top-0 left-0 flex flex-col h-screen gap-3 p-3 border-r border-gray-200  md:w-[16%] w-[80px] z-10 fixed'>
+      <div className='text-start font-bold'>Logo</div>
       {sidebarItems.map((item, index) => {
         return (
           <div
             key={index}
-            className="flex gap-3 items-center hover:bg-gray-200 rounded-lg p-3 my-3 cursor-pointer relative w-full"
+            className='flex gap-3 items-center hover:bg-gray-200 rounded-lg p-3 my-3 cursor-pointer relative w-full'
             onClick={() => leftSidebarItemsHandler(item.text)}
           >
             {item.icon}
-            <span className="hidden md:block">{item.text}</span>
+            <span className='hidden md:block'>{item.text}</span>
           </div>
         );
       })}

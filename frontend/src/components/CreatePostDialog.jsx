@@ -32,7 +32,7 @@ function CreatePostDialog({ open, setOpen }) {
     e.preventDefault();
     const formData = new FormData();
     formData.append("caption", caption);
-    if (media) formData.append("image", file);
+    if (file) formData.append("image", file);
     setLoading(true);
     try {
       const res = await axios.post("http://localhost:8080/api/post/addPost", formData, {
