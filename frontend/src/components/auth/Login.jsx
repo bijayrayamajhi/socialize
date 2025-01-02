@@ -33,12 +33,16 @@ function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:8080/api/user/login", input, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      });
+      const res = await axios.post(
+        "https://socialize-cpzw.onrender.com/api/user/login",
+        input,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
       if (res.data.success) {
         dispatch(setAuthUser(res.data.user));
         navigate("/");

@@ -38,9 +38,12 @@ const VerifyEmail = () => {
     const verificationCode = otp.join("");
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:8080/api/user/verify-email", {
-        verificationToken: verificationCode,
-      });
+      const response = await axios.post(
+        "https://socialize-cpzw.onrender.com/api/user/verify-email",
+        {
+          verificationToken: verificationCode,
+        }
+      );
       if (response.data.success) {
         navigate("/");
         toast.success(response.data.message);

@@ -31,12 +31,16 @@ function Signup() {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await axios.post("http://localhost:8080/api/user/register", input, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      });
+      const res = await axios.post(
+        "https://socialize-cpzw.onrender.com/api/user/register",
+        input,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
 
       if (res.data.success) {
         navigate("/verify-email");
