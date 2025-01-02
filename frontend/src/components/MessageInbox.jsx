@@ -18,7 +18,7 @@ const MessageInbox = () => {
   const sendMessageHandler = async (receiverId) => {
     try {
       const res = await axios.post(
-        `http://localhost:8080/api/message/send/${receiverId}`,
+        `https://socialize-cpzw.onrender.com/api/message/send/${receiverId}`,
         { message },
         {
           headers: {

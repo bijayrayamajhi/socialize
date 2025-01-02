@@ -44,7 +44,7 @@ function Post({ post }) {
   const handleFollow = async (id) => {
     try {
       const res = await axios.get(
-        `http://localhost:8080/api/user/followAndUnfollow/${id}`,
+        `https://socialize-cpzw.onrender.com/api/user/followAndUnfollow/${id}`,
         {
           withCredentials: true,
         }
@@ -66,7 +66,7 @@ function Post({ post }) {
   const handleUnfollow = async (id) => {
     try {
       const res = await axios.get(
-        `http://localhost:8080/api/user/followAndUnfollow/${id}`,
+        `https://socialize-cpzw.onrender.com/api/user/followAndUnfollow/${id}`,
         {
           withCredentials: true,
         }
@@ -88,7 +88,7 @@ function Post({ post }) {
   const handleCommentOnPost = async () => {
     try {
       const res = await axios.post(
-        `http://localhost:8080/api/post/comment/${post?._id}`,
+        `https://socialize-cpzw.onrender.com/api/post/comment/${post?._id}`,
         { commentInputText },
         {
           headers: {
@@ -119,9 +119,12 @@ function Post({ post }) {
   const handleLikeOrDislike = async (postId) => {
     try {
       const action = liked ? "dislike" : "like";
-      const res = await axios.get(`http://localhost:8080/api/post/${action}/${postId}`, {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        `https://socialize-cpzw.onrender.com/api/post/${action}/${postId}`,
+        {
+          withCredentials: true,
+        }
+      );
       if (res.data.success) {
         setLiked(!liked);
         toast.success(res.data.message);
@@ -150,7 +153,7 @@ function Post({ post }) {
   const handleDelete = async () => {
     try {
       const res = await axios.post(
-        `http://localhost:8080/api/post/delete/${post._id}`,
+        `https://socialize-cpzw.onrender.com/api/post/delete/${post._id}`,
         {}, // Empty body
         {
           withCredentials: true,
@@ -170,7 +173,7 @@ function Post({ post }) {
   const bookmarkPostHandler = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8080/api/post/bookmark/${post?._id}`,
+        `https://socialize-cpzw.onrender.com/api/post/bookmark/${post?._id}`,
         { withCredentials: true }
       );
       if (res.data.success) {

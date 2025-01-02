@@ -8,9 +8,12 @@ const useGetAllPosts = () => {
   useEffect(() => {
     const fetchAllPosts = async () => {
       try {
-        const res = await axios.get("http://localhost:8080/api/post/allpost", {
-          withCredentials: true,
-        });
+        const res = await axios.get(
+          "https://socialize-cpzw.onrender.com/api/post/allpost",
+          {
+            withCredentials: true,
+          }
+        );
         if (res.data.success) {
           dispatch(setPosts(res.data.posts));
         }

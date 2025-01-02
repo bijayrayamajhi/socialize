@@ -12,7 +12,7 @@ const useSocket = (user) => {
 
   useEffect(() => {
     if (user) {
-      const socketio = io("http://localhost:8080", {
+      const socketio = io("https://socialize-cpzw.onrender.com/", {
         query: { userId: user?._id },
         transports: ["websocket"],
       });

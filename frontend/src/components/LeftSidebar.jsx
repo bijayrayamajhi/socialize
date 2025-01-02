@@ -25,7 +25,7 @@ function LeftSidebar() {
   };
   const logoutHandler = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/user/logout", {
+      const res = await axios.get("https://socialize-cpzw.onrender.com/api/user/logout", {
         withCredentials: true,
       });
       if (res.data.success) {

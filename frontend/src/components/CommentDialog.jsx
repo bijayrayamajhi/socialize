@@ -40,7 +40,7 @@ function CommentDialog({ dialogOpen, setDialogOpen }) {
   const handleCommentOnPost = async () => {
     try {
       const res = await axios.post(
-        `http://localhost:8080/api/post/comment/${selectedPost?._id}`,
+        `https://socialize-cpzw.onrender.com/api/post/comment/${selectedPost?._id}`,
         { commentInputText },
         {
           headers: {

@@ -35,12 +35,16 @@ function CreatePostDialog({ open, setOpen }) {
     if (file) formData.append("image", file);
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:8080/api/post/addPost", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        withCredentials: true,
-      });
+      const res = await axios.post(
+        "https://socialize-cpzw.onrender.com/api/post/addPost",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        }
+      );
       if (res.data.success) {
         dispatch(setPosts([res.data.post, ...posts]));
         toast.success(res.data.message);

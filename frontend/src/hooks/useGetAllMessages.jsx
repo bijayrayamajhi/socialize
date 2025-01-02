@@ -11,7 +11,7 @@ const useGetAllMessages = () => {
       try {
         if (!selectedUser?._id) return;
         const res = await axios.get(
-          `http://localhost:8080/api/message/all/${selectedUser?._id}`,
+          `https://socialize-cpzw.onrender.com/api/message/all/${selectedUser?._id}`,
           { withCredentials: true }
         );
         if (res.data.success) {

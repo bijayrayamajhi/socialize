@@ -9,9 +9,12 @@ const useGetsuggestedUsers = () => {
   useEffect(() => {
     const fetchSuggestedUsers = async () => {
       try {
-        const res = await axios.get("http://localhost:8080/api/user/suggested", {
-          withCredentials: true,
-        });
+        const res = await axios.get(
+          "https://socialize-cpzw.onrender.com/api/user/suggested",
+          {
+            withCredentials: true,
+          }
+        );
 
         if (res.data.success) {
           dispatch(setSuggestedUsers(res.data.users));

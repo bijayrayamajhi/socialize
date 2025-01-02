@@ -49,7 +49,7 @@ const EditProfile = () => {
     try {
       setLoading(true);
       const res = await axios.post(
-        "http://localhost:8080/api/user/profile/edit",
+        "https://socialize-cpzw.onrender.com/api/user/profile/edit",
         formData,
         {
           headers: {

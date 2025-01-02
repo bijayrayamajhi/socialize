@@ -10,9 +10,12 @@ const useGetUserProfile = (userId) => {
     const fetchUserProfile = async () => {
       try {
         console.log(userId);
-        const res = await axios.get(`http://localhost:8080/api/user/${userId}/profile`, {
-          withCredentials: true,
-        });
+        const res = await axios.get(
+          `https://socialize-cpzw.onrender.com/api/user/${userId}/profile`,
+          {
+            withCredentials: true,
+          }
+        );
 
         if (res.data.success) {
           dispatch(setUserProfile(res.data.user));

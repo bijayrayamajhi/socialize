@@ -30,7 +30,7 @@ function Profile() {
   const handleFollow = async (id) => {
     try {
       const res = await axios.get(
-        `http://localhost:8080/api/user/followAndUnfollow/${id}`,
+        `https://socialize-cpzw.onrender.com/api/user/followAndUnfollow/${id}`,
         {
           withCredentials: true,
         }
@@ -52,7 +52,7 @@ function Profile() {
   const handleUnfollow = async (id) => {
     try {
       const res = await axios.get(
-        `http://localhost:8080/api/user/followAndUnfollow/${id}`,
+        `https://socialize-cpzw.onrender.com/api/user/followAndUnfollow/${id}`,
         {
           withCredentials: true,
         }
