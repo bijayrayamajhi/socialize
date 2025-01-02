@@ -126,7 +126,7 @@ export const generateWelcomeEmailHtml = (name) => {
                   <p>Best Regards,<br/>The Socializee Team/p>
                 </div>
                 <div class="email-footer">
-                  <p>&copy; 2024 Patel Food. All rights reserved.</p>
+                  <p>&copy; 2024 Socializee. All rights reserved.</p>
                 </div>
               </div>
             </body>
@@ -247,7 +247,7 @@ export const generateResetSuccessEmailHtml = () => {
               <p>Thank you,<br/>The Socializee Team</p>
             </div>
             <div class="email-footer">
-              <p>&copy; 2024 Patel Food. All rights reserved.</p>
+              <p>&copy; 2024 Socializee. All rights reserved.</p>
             </div>
           </div>
         </body>

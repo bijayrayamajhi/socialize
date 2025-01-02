@@ -23,7 +23,7 @@ function RightSIdebar() {
           <h1 className='text-sm font-semibold text-start'>
             <Link to={`/profile/${user?._id}`}>{user?.username}</Link>
           </h1>
-          <span className='text-gray-600 text-sm'>{user?.bio || "bio here..."}</span>
+          <span className='text-gray-600 text-sm'>{user?.bio || "add your bio..."}</span>
         </div>
       </div>
       <div className='my-8 w-full'>

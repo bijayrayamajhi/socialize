@@ -1,27 +1,75 @@
-import useGetUserProfile from "@/hooks/useGetUserProfile";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { Button } from "./ui/button";
 import { useState } from "react";
 import { Heart, MessageCircle } from "lucide-react";
+import { toast } from "sonner";
+import axios from "axios";
+import { setAuthUser, setUserProfile } from "./redux/authSlice";
+import useGetUserProfile from "@/hooks/useGetUserProfile";
 
 function Profile() {
   const params = useParams();
   const userId = params.id;
 
+  useGetUserProfile(userId);
+
   const [activeTab, setActiveTab] = useState("posts");
+  const dispatch = useDispatch();
 
   const handleActiveTab = (tab) => {
     setActiveTab(tab);
   };
 
-  useGetUserProfile(userId);
   const { userProfile, user } = useSelector((store) => store.auth);
 
   const isLoggedInUserProfile = user?._id === userProfile?._id;
-  const isFollowing = true;
+  const isFollowing = user?.following?.includes(userProfile?._id);
 
+  const handleFollow = async (id) => {
+    try {
+      const res = await axios.get(
+        `http://localhost:8080/api/user/followAndUnfollow/${id}`,
+        {
+          withCredentials: true,
+        }
+      );
+      if (res.data.success) {
+        toast.success(res.data.message);
+        //updating followers and following count in store
+        const updatedFollowing = [...user.following, id];
+        const updatedFollowers = [...userProfile.followers, user._id];
+        dispatch(setAuthUser({ ...user, following: updatedFollowing }));
+        dispatch(setUserProfile({ ...userProfile, followers: updatedFollowers }));
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || "An error occurred");
+    }
+  };
+
+  const handleUnfollow = async (id) => {
+    try {
+      const res = await axios.get(
+        `http://localhost:8080/api/user/followAndUnfollow/${id}`,
+        {
+          withCredentials: true,
+        }
+      );
+      if (res.data.success) {
+        toast.success(res.data.message);
+        //updating followers and following count in store
+        const updatedFollowing = user?.following.filter((id) => id !== userProfile?._id);
+        const updatedFollowers = userProfile?.followers.filter((id) => id !== user?._id);
+        dispatch(setAuthUser({ ...user, following: updatedFollowing }));
+        dispatch(setUserProfile({ ...userProfile, followers: updatedFollowers }));
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.response?.data?.message || "An error occurred");
+    }
+  };
   let displayedPosts;
   if (activeTab === "posts") {
     displayedPosts = userProfile?.posts;
@@ -73,18 +121,24 @@ function Profile() {
                 <Button
                   className='px-4 py-1 text-sm text-black bg-gray-100 rounded bg hover:bg-gray-200'
                   varient='secondary'
+                  onClick={() => handleUnfollow(userProfile?._id)}
                 >
                   Unfollow
                 </Button>
-                <Button
-                  className='px-4 py-1 text-sm text-black bg-gray-100 rounded bg hover:bg-gray-200'
-                  varient='secondary'
-                >
-                  Message
-                </Button>
+                <Link to={"/chat"}>
+                  <Button
+                    className='px-4 py-1 text-sm text-black bg-gray-100 rounded bg hover:bg-gray-200'
+                    varient='secondary'
+                  >
+                    Message
+                  </Button>
+                </Link>
               </>
             ) : (
-              <Button className='px-4 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded'>
+              <Button
+                onClick={() => handleFollow(userProfile?._id)}
+                className='px-4 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded'
+              >
                 Follow
               </Button>
             )}
@@ -114,12 +168,14 @@ function Profile() {
           >
             POSTS
           </p>
-          <p
-            className={`cursor-pointer ${activeTab === "saved" ? "font-bold" : ""}`}
-            onClick={() => handleActiveTab("saved")}
-          >
-            SAVED
-          </p>
+          {user._id === userProfile._id && (
+            <p
+              className={`cursor-pointer ${activeTab === "saved" ? "font-bold" : ""}`}
+              onClick={() => handleActiveTab("saved")}
+            >
+              SAVED
+            </p>
+          )}
         </div>
       </div>
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>

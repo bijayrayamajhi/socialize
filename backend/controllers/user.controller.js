@@ -80,6 +80,7 @@ export const login = async (req, res) => {
 
     generateToken(res, user);
     user.lastLogin = new Date();
+    await user.save();
 
     const userWithoutPassword = await User.findOne({ email }).select("-password");
 
@@ -266,6 +267,9 @@ export const resetPassword = async (req, res) => {
 export const getProfile = async (req, res) => {
   try {
     const userId = req.params.id;
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "User ID is required" });
+    }
     const user = await User.findById(userId)
       .populate({ path: "posts", createdAt: -1 })
       .populate("bookmarks");

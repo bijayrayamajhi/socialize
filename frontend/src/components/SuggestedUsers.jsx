@@ -1,9 +1,11 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const SuggestedUsers = () => {
   const { suggestedUsers } = useSelector((store) => store.auth);
+
   return (
     <div>
       <hr />
@@ -12,12 +14,12 @@ const SuggestedUsers = () => {
         <h1 className='font-semibold text-sm cursor-pointer'>See all</h1>
       </div>
       <div className='flex flex-col gap-3'>
-        {suggestedUsers.map((user) => (
-          <div className='flex gap-2' key={user?._id}>
-            <Link to={`/profile/${user?._id}`}>
+        {suggestedUsers.map((singleUser) => (
+          <div className='flex gap-2' key={singleUser?._id}>
+            <Link to={`/profile/${singleUser?._id}`}>
               <Avatar>
                 <AvatarImage
-                  src={user?.profilePicture}
+                  src={singleUser?.profilePicture}
                   alt='User profile image'
                   className='w-10 h-10 rounded-full overflow-hidden object-cover'
                 />
@@ -27,13 +29,12 @@ const SuggestedUsers = () => {
 
             <div>
               <h1 className='text-sm font-semibold text-start'>
-                <Link to={`/profile/${user?._id}`}>{user?.username}</Link>
-                <span className='text-xs text-[#3BADF8] font-bold cursor-pointer pl-5'>
-                  Follow
-                </span>
+                <Link to={`/profile/${singleUser?._id}`}>{singleUser?.username}</Link>
               </h1>
 
-              <span className='text-gray-600 text-sm text-start'>{user?.bio || ""}</span>
+              <span className='text-gray-600 text-sm text-start'>
+                {singleUser?.bio || ""}
+              </span>
             </div>
           </div>
         ))}

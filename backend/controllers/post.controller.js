@@ -142,10 +142,10 @@ export const likePost = async (req, res) => {
         type: "like",
         userDetails: user,
         targetedPostId,
-        message: "your post was liked! ",
+        message: "liked your post ",
       };
       const postOwnerSocketId = getReceiverSocketId(postOwnerID);
-      io.to(postOwnerSocketId).emit("notification", notification);
+      io.to(postOwnerSocketId).emit("notifications", notification);
     }
 
     return res.status(200).json({ message: "Post liked", success: true });
@@ -184,10 +184,10 @@ export const dislikePost = async (req, res) => {
         type: "dislike",
         userDetails: user,
         targetedPostId,
-        message: "your post was disliked! ",
+        message: "dislike your post ",
       };
       const postOwnerSocketId = getReceiverSocketId(postOwnerId);
-      io.to(postOwnerSocketId).emit("notification", notification);
+      io.to(postOwnerSocketId).emit("notifications", notification);
     }
 
     return res.status(200).json({
@@ -336,7 +336,6 @@ export const bookmarkPost = async (req, res) => {
     if (isAlreadyBookmarked) {
       //unbookmark logic
       const user = await User.updateOne({ $pull: { bookmarks: post._id } });
-      await user.save();
 
       return res.status(200).json({
         type: "unsaved",
@@ -346,7 +345,6 @@ export const bookmarkPost = async (req, res) => {
     } else {
       //bookmark logic
       const user = await User.updateOne({ $addToSet: { bookmarks: post._id } });
-      await user.save();
 
       return res.status(200).json({
         type: "saved",
