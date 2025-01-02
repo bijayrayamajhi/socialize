@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Heart, MessageCircle, Bookmark, MoreHorizontal, Send } from "lucide-react";
 import { FaHeart } from "react-icons/fa";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
@@ -15,70 +15,24 @@ import { toast } from "sonner";
 import axios from "axios";
 import { setPosts, setSelectedPost } from "./redux/postSlice";
 import { Badge } from "@/components/ui/badge";
-import { setAuthUser, setUserProfile } from "./redux/authSlice";
 
 function Post({ post }) {
-  const { user, userProfile } = useSelector((store) => store.auth);
+  const { user } = useSelector((store) => store.auth);
   const [comments, setComments] = useState(post.comments);
   const [commentInputText, setCommentInputText] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [open, setOpen] = useState(false);
-  const { posts, selectedPost } = useSelector((store) => store.post);
+  const { posts } = useSelector((store) => store.post);
   const dispatch = useDispatch();
   const [liked, setLiked] = useState(post.likes.includes(user?._id) || false);
   const [postLikeCount, setPostLikeCount] = useState(post.likes.length);
 
-  const isFollowing = user?.following?.includes(post?.author?._id);
   const commentInputChangeHandler = (e) => {
     const inputText = e.target.value;
     if (inputText.trim()) {
       setCommentInputText(inputText);
     } else {
       setCommentInputText("");
-    }
-  };
-
-  const handleFollow = async (id) => {
-    try {
-      const res = await axios.get(
-        `https://socialize-cpzw.onrender.com/api/user/followAndUnfollow/${id}`,
-        {
-          withCredentials: true,
-        }
-      );
-      if (res.data.success) {
-        toast.success(res.data.message);
-        //updating followers and following count in store
-        const updatedFollowing = [...user.following, id];
-        const updatedFollowers = [...userProfile.followers, user._id];
-        dispatch(setAuthUser({ ...user, following: updatedFollowing }));
-        dispatch(setUserProfile({ ...userProfile, followers: updatedFollowers }));
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error(error.response?.data?.message || "An error occurred");
-    }
-  };
-
-  const handleUnfollow = async (id) => {
-    try {
-      const res = await axios.get(
-        `https://socialize-cpzw.onrender.com/api/user/followAndUnfollow/${id}`,
-        {
-          withCredentials: true,
-        }
-      );
-      if (res.data.success) {
-        toast.success(res.data.message);
-        //updating followers and following count in store
-        const updatedFollowing = user?.following.filter((id) => id !== userProfile?._id);
-        const updatedFollowers = userProfile?.followers.filter((id) => id !== user?._id);
-        dispatch(setAuthUser({ ...user, following: updatedFollowing }));
-        dispatch(setUserProfile({ ...userProfile, followers: updatedFollowers }));
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error(error?.response?.data?.message || "An error occurred");
     }
   };
 
@@ -182,31 +136,6 @@ function Post({ post }) {
     }
   };
 
-  useEffect(() => {
-    if (!selectedPost?.author?._id) {
-      // Reset user profile if no post is selected
-      dispatch(setUserProfile(null));
-      return;
-    }
-    const fetchUserProfile = async () => {
-      try {
-        const res = await axios.get(
-          `https://socialize-cpzw.onrender.com/api/user/${selectedPost?.author?._id}/profile`,
-          {
-            withCredentials: true,
-          }
-        );
-
-        if (res.data.success) {
-          dispatch(setUserProfile(res.data.user));
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchUserProfile();
-  }, [selectedPost?.author?._id, dispatch]);
-
   return (
     <div className='my-8 w-full max-w-md mx-auto border border-gray-200 rounded-lg shadow-md bg-white sm:max-w-lg relative'>
       {/* Header */}
@@ -232,10 +161,7 @@ function Post({ post }) {
         <Dialog open={open} onOpenChange={setOpen}>
           {/* Trigger */}
           <DialogTrigger asChild>
-            <MoreHorizontal
-              className='cursor-pointer'
-              onClick={() => dispatch(setSelectedPost(post))}
-            />
+            <MoreHorizontal className='cursor-pointer' />
           </DialogTrigger>
 
           {/* Overlay (Backdrop) */}
@@ -247,24 +173,6 @@ function Post({ post }) {
             onInteractOutside={() => setOpen(false)}
           >
             <div className='flex flex-col items-center gap-4'>
-              {post?.author?._id !== user?._id &&
-                (isFollowing ? (
-                  <Button
-                    variant='ghost'
-                    className='w-fit text-[#ED4956] font-bold'
-                    onClick={() => handleUnfollow(post?.author?._id)}
-                  >
-                    Unfollow
-                  </Button>
-                ) : (
-                  <Button
-                    variant='ghost'
-                    className='w-fit  bg-blue-500 hover:bg-blue-600 font-bold'
-                    onClick={() => handleFollow(post?.author?._id)}
-                  >
-                    Follow
-                  </Button>
-                ))}
               <Button variant='ghost' className='w-fit'>
                 Add to favorites
               </Button>
