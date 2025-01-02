@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Heart, MessageCircle, Bookmark, MoreHorizontal, Send } from "lucide-react";
 import { FaHeart } from "react-icons/fa";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
@@ -16,7 +16,6 @@ import axios from "axios";
 import { setPosts, setSelectedPost } from "./redux/postSlice";
 import { Badge } from "@/components/ui/badge";
 import { setAuthUser, setUserProfile } from "./redux/authSlice";
-import useGetUserProfile from "@/hooks/useGetUserProfile";
 
 function Post({ post }) {
   const { user, userProfile } = useSelector((store) => store.auth);
@@ -38,8 +37,6 @@ function Post({ post }) {
       setCommentInputText("");
     }
   };
-
-  useGetUserProfile(selectedPost?.author?._id);
 
   const handleFollow = async (id) => {
     try {
@@ -184,6 +181,31 @@ function Post({ post }) {
       toast.error(error.response?.data?.message || "An error occurred");
     }
   };
+
+  useEffect(() => {
+    if (!selectedPost?.author?._id) {
+      // Reset user profile if no post is selected
+      dispatch(setUserProfile(null));
+      return;
+    }
+    const fetchUserProfile = async () => {
+      try {
+        const res = await axios.get(
+          `https://socialize-cpzw.onrender.com/api/user/${selectedPost?.author?._id}/profile`,
+          {
+            withCredentials: true,
+          }
+        );
+
+        if (res.data.success) {
+          dispatch(setUserProfile(res.data.user));
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchUserProfile();
+  }, [selectedPost?.author?._id, dispatch]);
 
   return (
     <div className='my-8 w-full max-w-md mx-auto border border-gray-200 rounded-lg shadow-md bg-white sm:max-w-lg relative'>
